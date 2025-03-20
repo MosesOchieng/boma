@@ -820,4 +820,66 @@ body {
         width: 150px;
         height: 150px;
     }
+}
+
+/* Modal Styles */
+.spinner-container {
+    padding: 30px;
+}
+
+.success-icon {
+    font-size: 4rem;
+    color: #28a745;
+    animation: scaleIn 0.5s ease;
+}
+
+.case-id-display {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Council Member Navigation */
+.council-nav {
+    background: var(--primary-color);
+    padding: 15px 0;
+}
+
+.council-nav .nav-link {
+    color: rgba(255,255,255,0.8);
+    padding: 10px 20px;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+}
+
+.council-nav .nav-link:hover,
+.council-nav .nav-link.active {
+    color: white;
+    background: rgba(255,255,255,0.1);
+}
+
+.council-nav .nav-link.urgent {
+    background: var(--accent-color);
+    color: white;
+}
+
+.council-badge {
+    background: var(--accent-color);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    margin-left: 5px;
 } 
