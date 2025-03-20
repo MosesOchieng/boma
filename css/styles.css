@@ -1,0 +1,29 @@
+.modal-content {
+    border-radius: 15px;
+    border: none;
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+.fa-check-circle {
+    color: #28a745;
+    animation: scaleIn 0.5s ease;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+} 

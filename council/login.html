@@ -6,6 +6,10 @@
     <title>Council Login - BOMA Students</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="/css/council-login.css">
+    
+    <!-- Update Bootstrap and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 </head>
 <body>
     <div class="login-container">
@@ -72,31 +76,39 @@
             passwordToggle.classList.toggle('fa-eye-slash');
         });
 
-        // Form submission
+        // Update the login handling code
         async function handleLogin(event) {
             event.preventDefault();
             const button = document.getElementById('loginButton');
             const errorMessage = document.getElementById('errorMessage');
             
-            button.classList.add('loading');
-            
             try {
+                button.classList.add('loading');
                 const formData = new FormData(event.target);
+                const data = Object.fromEntries(formData);
+
                 const response = await fetch('/api/council/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(Object.fromEntries(formData)),
+                    body: JSON.stringify(data),
+                    credentials: 'include' // Add this to handle cookies
                 });
 
                 if (response.ok) {
-                    window.location.href = '/council/dashboard';
+                    const result = await response.json();
+                    if (result.success) {
+                        window.location.href = '/council/dashboard';
+                    } else {
+                        throw new Error(result.message || 'Login failed');
+                    }
                 } else {
-                    errorMessage.classList.add('show');
+                    throw new Error('Login failed');
                 }
             } catch (error) {
-                errorMessage.textContent = 'An error occurred. Please try again.';
+                console.error('Login error:', error);
+                errorMessage.textContent = error.message || 'An error occurred. Please try again.';
                 errorMessage.classList.add('show');
             } finally {
                 button.classList.remove('loading');
@@ -104,6 +116,14 @@
 
             return false;
         }
+
+        // Add error handling for fetch failures
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('Unhandled promise rejection:', event.reason);
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = 'Network error. Please check your connection.';
+            errorMessage.classList.add('show');
+        });
     </script>
 </body>
 </html> 

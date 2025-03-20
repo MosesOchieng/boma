@@ -1,41 +1,57 @@
 const express = require('express');
 const router = express.Router();
 const CouncilMember = require('../models/CouncilMember');
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-router.post('/login', async (req, res) => {
+router.post('/api/council/login', async (req, res) => {
     try {
         const { email, password } = req.body;
+
+        // Validate input
+        if (!email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email and password are required'
+            });
+        }
 
         // Find council member
         const councilMember = await CouncilMember.findOne({ email });
         if (!councilMember) {
-            throw new Error('Invalid credentials');
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid email or password'
+            });
         }
 
-        // Check password
-        const isMatch = await bcrypt.compare(password, councilMember.password);
-        if (!isMatch) {
-            throw new Error('Invalid credentials');
+        // Verify password
+        const isValid = await councilMember.verifyPassword(password);
+        if (!isValid) {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid email or password'
+            });
         }
 
         // Generate token
         const token = jwt.sign(
-            { _id: councilMember._id.toString() },
+            { id: councilMember._id },
             process.env.JWT_SECRET,
             { expiresIn: '24h' }
         );
 
-        // Save token
-        councilMember.tokens = councilMember.tokens.concat({ token });
-        await councilMember.save();
+        // Set cookie
+        res.cookie('auth_token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        });
 
-        // Send response
-        res.json({
-            token,
+        return res.json({
+            success: true,
+            message: 'Login successful',
             user: {
-                id: councilMember._id,
                 name: councilMember.name,
                 email: councilMember.email,
                 role: councilMember.role
@@ -43,7 +59,11 @@ router.post('/login', async (req, res) => {
         });
 
     } catch (error) {
-        res.status(401).json({ error: 'Invalid credentials' });
+        console.error('Login error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'An error occurred during login'
+        });
     }
 });
 
