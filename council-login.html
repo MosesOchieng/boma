@@ -3,148 +3,73 @@
 <head>
     <title>Council Login - BOMA Students</title>
     <!-- Include your existing head content -->
-    <link rel="stylesheet" href="css/custom.css">
+    <link rel="stylesheet" href="css/council-login.css">
 </head>
 <body>
-    <!-- Include your navbar -->
-
-    <section class="ftco-section">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <div class="login-wrap p-5">
-                        <div class="text-center mb-5">
-                            <h2>Council Member Login</h2>
-                            <p>Access the student support dashboard</p>
-                        </div>
-
-                        <form id="councilLoginForm" class="login-form">
-                            <div class="form-group">
-                                <label>Email Address</label>
-                                <input type="email" class="form-control" name="email" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Password</label>
-                                <div class="password-input">
-                                    <input type="password" class="form-control" name="password" required>
-                                    <span class="toggle-password">
-                                        <i class="fa fa-eye"></i>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="rememberMe">
-                                        <label class="custom-control-label" for="rememberMe">Remember me</label>
-                                    </div>
-                                    <a href="#" class="forgot-password">Forgot Password?</a>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-primary btn-block">Login</button>
-                            </div>
-
-                            <div class="text-center mt-4">
-                                <p>Need access? <a href="contact.html">Contact administrator</a></p>
-                            </div>
-                        </form>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="/images/council-logo.png" alt="BOMA Council Logo">
+                <h2>Council Member Login</h2>
+            </div>
+            <div class="login-form">
+                <div id="loginError" class="alert alert-danger" style="display: none;"></div>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" required>
                     </div>
-                </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="login-button">Sign In</button>
+                </form>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- Add login specific styles -->
-    <style>
-        .login-wrap {
-            background: #fff;
-            border-radius: 15px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        }
-
-        .password-input {
-            position: relative;
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-        }
-
-        .forgot-password {
-            color: var(--primary-color);
-            font-size: 0.9rem;
-        }
-
-        .login-form .btn {
-            padding: 12px;
-            font-weight: 600;
-        }
-    </style>
-
-    <!-- Add login handling JavaScript -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const loginForm = document.getElementById('councilLoginForm');
-            const togglePassword = document.querySelector('.toggle-password');
-
-            // Toggle password visibility
-            togglePassword.addEventListener('click', function() {
-                const passwordInput = this.previousElementSibling;
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
-                this.querySelector('i').classList.toggle('fa-eye');
-                this.querySelector('i').classList.toggle('fa-eye-slash');
+    document.getElementById('loginForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const errorDiv = document.getElementById('loginError');
+        const button = document.querySelector('button[type="submit"]');
+        
+        try {
+            button.disabled = true;
+            button.textContent = 'Logging in...';
+            
+            const response = await fetch('/api/council/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
             });
 
-            // Handle form submission
-            loginForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
-
-                const formData = new FormData(this);
-                const data = Object.fromEntries(formData.entries());
-
-                try {
-                    const response = await fetch('/api/council/login', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(data)
-                    });
-
-                    if (response.ok) {
-                        const result = await response.json();
-                        // Store token
-                        localStorage.setItem('councilToken', result.token);
-                        // Redirect to dashboard
-                        window.location.href = '/council/dashboard';
-                    } else {
-                        throw new Error('Login failed');
-                    }
-                } catch (error) {
-                    showError('Invalid credentials. Please try again.');
-                }
-            });
-
-            function showError(message) {
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'alert alert-danger mt-3';
-                errorDiv.textContent = message;
-                loginForm.insertAdjacentElement('beforebegin', errorDiv);
-
-                setTimeout(() => {
-                    errorDiv.remove();
-                }, 3000);
+            const data = await response.json();
+            
+            if (response.ok && data.success) {
+                // Store the token and user info
+                localStorage.setItem('councilToken', data.token);
+                localStorage.setItem('councilMember', JSON.stringify(data.councilMember));
+                
+                // Redirect to dashboard
+                window.location.href = '/council/dashboard';
+            } else {
+                throw new Error(data.message || 'Login failed');
             }
-        });
+        } catch (error) {
+            errorDiv.textContent = error.message;
+            errorDiv.style.display = 'block';
+        } finally {
+            button.disabled = false;
+            button.textContent = 'Sign In';
+        }
+    });
     </script>
 </body>
 </html> 
