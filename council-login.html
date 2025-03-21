@@ -52,6 +52,14 @@
                 placeholder="Enter your password"
               />
             </div>
+            <div class="form-group remember-me">
+              <label class="checkbox-container">
+                <input type="checkbox" id="rememberMe" name="rememberMe" />
+                <span class="checkmark"></span>
+                Remember me
+              </label>
+              <a href="#" class="forgot-password">Forgot Password?</a>
+            </div>
             <button type="submit" class="login-button">Sign In</button>
           </form>
         </div>
@@ -77,6 +85,18 @@
         },
       ];
 
+      // Check for remembered credentials on page load
+      document.addEventListener("DOMContentLoaded", function () {
+        const rememberedUser = JSON.parse(
+          localStorage.getItem("rememberedUser"),
+        );
+        if (rememberedUser) {
+          document.getElementById("email").value = rememberedUser.email;
+          document.getElementById("password").value = rememberedUser.password;
+          document.getElementById("rememberMe").checked = true;
+        }
+      });
+
       document
         .getElementById("loginForm")
         .addEventListener("submit", function (event) {
@@ -84,6 +104,7 @@
 
           const email = document.getElementById("email").value;
           const password = document.getElementById("password").value;
+          const rememberMe = document.getElementById("rememberMe").checked;
           const errorDiv = document.getElementById("loginError");
           const successDiv = document.getElementById("loginSuccess");
           const button = document.querySelector('button[type="submit"]');
@@ -103,17 +124,32 @@
               // Hide error message if it was shown
               errorDiv.style.display = "none";
 
-              // Store auth data
-              localStorage.setItem(
-                "councilToken",
-                btoa(
+              // Handle remember me
+              if (rememberMe) {
+                localStorage.setItem(
+                  "rememberedUser",
                   JSON.stringify({
-                    id: member.id,
-                    email: member.email,
-                    role: member.role,
+                    email: email,
+                    password: password,
                   }),
-                ),
+                );
+              } else {
+                localStorage.removeItem("rememberedUser");
+              }
+
+              // Store auth data
+              const authToken = btoa(
+                JSON.stringify({
+                  id: member.id,
+                  email: member.email,
+                  role: member.role,
+                  exp: rememberMe
+                    ? Date.now() + 30 * 24 * 60 * 60 * 1000
+                    : Date.now() + 24 * 60 * 60 * 1000,
+                }),
               );
+
+              localStorage.setItem("councilToken", authToken);
               localStorage.setItem(
                 "councilMember",
                 JSON.stringify({
