@@ -3,9 +3,17 @@ document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("anonymousForm");
   const loadingModal = new bootstrap.Modal(
     document.getElementById("loadingModal"),
+    {
+      backdrop: "static",
+      keyboard: false,
+    },
   );
   const successModal = new bootstrap.Modal(
     document.getElementById("successModal"),
+    {
+      backdrop: "static",
+      keyboard: false,
+    },
   );
 
   if (form) {
@@ -18,10 +26,10 @@ document.addEventListener("DOMContentLoaded", function () {
     // Show loading modal
     loadingModal.show();
 
-    // Get form data
-    const formData = {
+    // Create case data
+    const caseData = {
       caseId: generateCaseId(),
-      name: form.querySelector('[name="name"]').value || "Anonymous",
+      name: form.querySelector('[name="name"]').value,
       email: form.querySelector('[name="email"]').value,
       feelingScale: form.querySelector('[name="feelingScale"]').value,
       concern: form.querySelector('[name="concern"]').value,
@@ -30,58 +38,41 @@ document.addEventListener("DOMContentLoaded", function () {
       date: new Date().toISOString(),
     };
 
-    // Process submission after delay
+    // Simulate delay and save data
     setTimeout(() => {
-      saveCase(formData);
+      try {
+        // Save to localStorage
+        saveToLocalStorage(caseData);
+
+        // Hide loading modal
+        loadingModal.hide();
+
+        // Show success modal
+        document.getElementById("successCaseId").textContent = caseData.caseId;
+        successModal.show();
+
+        // Reset form
+        form.reset();
+      } catch (error) {
+        console.error("Error:", error);
+        loadingModal.hide();
+        showError("Failed to submit form. Please try again.");
+      }
     }, 1500);
   }
 
   function generateCaseId() {
-    return "BOMA-" + Math.random().toString(36).substr(2, 6).toUpperCase();
+    return "BOMA-" + Math.random().toString(36).substring(2, 8).toUpperCase();
   }
 
-  function saveCase(caseData) {
+  function saveToLocalStorage(caseData) {
     try {
-      // Initialize or get existing cases array
-      let cases = [];
-      try {
-        const existingCases = localStorage.getItem("cases");
-        if (existingCases) {
-          cases = JSON.parse(existingCases);
-        }
-      } catch (e) {
-        cases = [];
-      }
-
-      // Ensure cases is an array
-      if (!Array.isArray(cases)) {
-        cases = [];
-      }
-
-      // Add new case
+      const cases = JSON.parse(localStorage.getItem("cases") || "[]");
       cases.push(caseData);
-
-      // Save to localStorage
       localStorage.setItem("cases", JSON.stringify(cases));
-
-      // Hide loading modal
-      loadingModal.hide();
-
-      // Update success modal with case ID
-      const successCaseIdElement = document.getElementById("successCaseId");
-      if (successCaseIdElement) {
-        successCaseIdElement.textContent = caseData.caseId;
-      }
-
-      // Show success modal
-      successModal.show();
-
-      // Reset form
-      form.reset();
     } catch (error) {
-      console.error("Save error:", error);
-      loadingModal.hide();
-      showError("Submission failed. Please try again.");
+      console.error("Storage error:", error);
+      throw new Error("Failed to save data");
     }
   }
 

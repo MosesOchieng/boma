@@ -75,12 +75,13 @@
           <div class="col-md-8 mx-auto">
             <div class="support-form-wrap p-5 bg-light">
               <h3>Request Anonymous Support</h3>
-              <form id="anonymousForm">
+              <form id="anonymousForm" class="needs-validation" novalidate>
                 <div class="mb-3">
                   <label for="name" class="form-label">Name</label>
                   <input
                     type="text"
                     class="form-control"
+                    id="name"
                     name="name"
                     required
                   />
@@ -90,6 +91,7 @@
                   <input
                     type="email"
                     class="form-control"
+                    id="email"
                     name="email"
                     required
                   />
@@ -101,6 +103,7 @@
                   <input
                     type="number"
                     class="form-control"
+                    id="feelingScale"
                     name="feelingScale"
                     min="1"
                     max="5"
@@ -113,6 +116,7 @@
                   >
                   <textarea
                     class="form-control"
+                    id="concern"
                     name="concern"
                     rows="4"
                     required
@@ -122,7 +126,7 @@
                   <label for="supportType" class="form-label"
                     >Type of Support Needed</label
                   >
-                  <select class="form-control" name="supportType" required>
+                  <select class="form-control" id="supportType" name="supportType" required>
                     <option value="immediate">Immediate Support</option>
                     <option value="scheduled">Scheduled Consultation</option>
                   </select>
@@ -151,9 +155,9 @@
             <div class="spinner-border text-primary mb-3" role="status">
               <span class="visually-hidden">Loading...</span>
             </div>
-            <h5>Processing Your Request...</h5>
+            <h5>Submitting your request...</h5>
             <p class="text-muted mb-0">
-              Please wait while we submit your information.
+              Please wait while we process your information.
             </p>
           </div>
         </div>

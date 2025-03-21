@@ -1,89 +1,72 @@
-class SubmissionForm {
-    constructor() {
-        this.form = document.getElementById('anonymousForm');
-        this.modal = new bootstrap.Modal(document.getElementById('submissionModal'));
-        this.loadingContent = document.getElementById('loadingContent');
-        this.successContent = document.getElementById('successContent');
-        this.setupValidation();
-        this.setupEventListeners();
-    }
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("anonymousForm");
 
-    setupValidation() {
-        this.form.addEventListener('input', (e) => {
-            if (e.target.hasAttribute('required')) {
-                this.validateField(e.target);
-            }
-        });
-    }
+  if (form) {
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
 
-    validateField(field) {
-        const isValid = field.checkValidity();
-        field.classList.toggle('is-invalid', !isValid);
-        field.classList.toggle('is-valid', isValid);
-        
-        const feedback = field.nextElementSibling;
-        if (feedback && feedback.classList.contains('invalid-feedback')) {
-            feedback.style.display = isValid ? 'none' : 'block';
+      try {
+        // Show loading modal
+        const loadingModal = new bootstrap.Modal(
+          document.getElementById("loadingModal"),
+        );
+        loadingModal.show();
+
+        // Create case data
+        const caseData = {
+          caseId: "BOMA-" + Date.now().toString(36).slice(-6).toUpperCase(),
+          name: form.querySelector('[name="name"]').value,
+          email: form.querySelector('[name="email"]').value,
+          feelingScale: form.querySelector('[name="feelingScale"]').value,
+          concern: form.querySelector('[name="concern"]').value,
+          supportType: form.querySelector('[name="supportType"]').value,
+          status: "pending",
+          date: new Date().toISOString(),
+        };
+
+        // Simulate processing delay
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+
+        // Store in localStorage
+        const existingCases = localStorage.getItem("cases");
+        const cases = existingCases ? JSON.parse(existingCases) : [];
+        cases.push(caseData);
+        localStorage.setItem("cases", JSON.stringify(cases));
+
+        // Hide loading modal
+        loadingModal.hide();
+
+        // Show success modal
+        const successModal = new bootstrap.Modal(
+          document.getElementById("successModal"),
+        );
+        document.getElementById("successCaseId").textContent = caseData.caseId;
+        successModal.show();
+
+        // Reset form
+        form.reset();
+      } catch (error) {
+        console.error("Submission error:", error);
+        // Hide loading modal if visible
+        const loadingModal = bootstrap.Modal.getInstance(
+          document.getElementById("loadingModal"),
+        );
+        if (loadingModal) {
+          loadingModal.hide();
         }
-    }
+        // Show error message
+        showError(
+          "There was an error submitting your request. Please try again.",
+        );
+      }
+    });
+  }
 
-    setupEventListeners() {
-        this.form.addEventListener('submit', (e) => this.handleSubmit(e));
-    }
-
-    async handleSubmit(event) {
-        event.preventDefault();
-
-        if (!this.form.checkValidity()) {
-            event.stopPropagation();
-            this.form.classList.add('was-validated');
-            return;
-        }
-
-        this.modal.show();
-        this.loadingContent.style.display = 'block';
-        this.successContent.style.display = 'none';
-
-        try {
-            const formData = new FormData(this.form);
-            const data = Object.fromEntries(formData);
-
-            const response = await fetch('/api/submit-anonymous', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            });
-
-            const result = await response.json();
-
-            if (!response.ok) throw new Error(result.message);
-
-            // Show success message
-            setTimeout(() => {
-                this.loadingContent.style.display = 'none';
-                this.successContent.style.display = 'block';
-                this.successContent.querySelector('.case-id').textContent = result.caseId;
-                this.form.reset();
-                this.form.classList.remove('was-validated');
-            }, 1500);
-
-        } catch (error) {
-            console.error('Submission error:', error);
-            this.loadingContent.innerHTML = `
-                <div class="error-state">
-                    <i class="fas fa-exclamation-circle text-danger"></i>
-                    <h5>Submission Failed</h5>
-                    <p>${error.message || 'Please try again later.'}</p>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-                </div>
-            `;
-        }
-    }
-}
-
-// Initialize form
-document.addEventListener('DOMContentLoaded', () => {
-    new SubmissionForm();
-}); 
+  function showError(message) {
+    const errorAlert = document.createElement("div");
+    errorAlert.className = "alert alert-danger mt-3";
+    errorAlert.textContent = message;
+    form.insertAdjacentElement("beforebegin", errorAlert);
+    setTimeout(() => errorAlert.remove(), 5000);
+  }
+});
