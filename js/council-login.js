@@ -72,4 +72,11 @@ window.addEventListener('unhandledrejection', function(event) {
         errorMessage.textContent = 'Network error. Please check your connection.';
         errorMessage.classList.add('show');
     }
-}); 
+});
+
+// Add this function
+function logout() {
+    localStorage.removeItem('councilToken');
+    localStorage.removeItem('councilMember');
+    window.location.href = '/council-login.html';
+} 
