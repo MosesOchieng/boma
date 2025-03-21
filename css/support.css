@@ -18,8 +18,8 @@
 }
 
 .modal-content {
-  border: none;
   border-radius: 15px;
+  border: none;
 }
 
 .modal-body {
