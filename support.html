@@ -156,7 +156,7 @@
     </section>
 
     <!-- Loading Modal -->
-    <div class="modal" id="loadingModal" tabindex="-1">
+    <div class="modal" id="loadingModal">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-body text-center p-4">
@@ -171,7 +171,7 @@
     </div>
 
     <!-- Success Modal -->
-    <div class="modal" id="successModal" tabindex="-1">
+    <div class="modal" id="successModal">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-body text-center p-4">
@@ -185,7 +185,7 @@
             <button
               type="button"
               class="btn btn-primary mt-3"
-              onclick="closeSuccessModal()"
+              data-bs-dismiss="modal"
             >
               Close
             </button>
@@ -274,15 +274,6 @@
         errorDiv.textContent = message;
         form.insertAdjacentElement("beforebegin", errorDiv);
         setTimeout(() => errorDiv.remove(), 5000);
-      }
-
-      function closeSuccessModal() {
-        const successModal = bootstrap.Modal.getInstance(
-          document.getElementById("successModal"),
-        );
-        if (successModal) {
-          successModal.hide();
-        }
       }
     </script>
   </body>
