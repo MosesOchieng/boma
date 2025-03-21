@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Support Form - BOMA Students</title>
+    <title>Anonymous Support - BOMA Students</title>
     <!-- ... other meta tags ... -->
 
     <!-- Google Fonts -->
@@ -90,9 +90,9 @@
           </div>
         </div>
 
-        <!-- Anonymous Support Form -->
-        <div class="row">
-          <div class="col-md-8 mx-auto">
+        <!-- Form Container -->
+        <div class="row justify-content-center">
+          <div class="col-md-8">
             <div class="card shadow">
               <div class="card-body">
                 <h3 class="card-title text-center mb-4">
@@ -100,28 +100,33 @@
                 </h3>
                 <form id="anonymousForm">
                   <div class="mb-3">
-                    <label class="form-label">Name</label>
+                    <label for="name" class="form-label">Name</label>
                     <input
                       type="text"
                       class="form-control"
+                      id="name"
                       name="name"
                       required
                     />
                   </div>
                   <div class="mb-3">
-                    <label class="form-label">Email</label>
+                    <label for="email" class="form-label">Email</label>
                     <input
                       type="email"
                       class="form-control"
+                      id="email"
                       name="email"
                       required
                     />
                   </div>
                   <div class="mb-3">
-                    <label class="form-label">How are you feeling? (1-5)</label>
+                    <label for="feelingScale" class="form-label"
+                      >How are you feeling? (1-5)</label
+                    >
                     <input
                       type="number"
                       class="form-control"
+                      id="feelingScale"
                       name="feelingScale"
                       min="1"
                       max="5"
@@ -129,17 +134,27 @@
                     />
                   </div>
                   <div class="mb-3">
-                    <label class="form-label">What's troubling you?</label>
+                    <label for="concern" class="form-label"
+                      >What's troubling you?</label
+                    >
                     <textarea
                       class="form-control"
+                      id="concern"
                       name="concern"
                       rows="4"
                       required
                     ></textarea>
                   </div>
                   <div class="mb-3">
-                    <label class="form-label">Type of Support Needed</label>
-                    <select class="form-control" name="supportType" required>
+                    <label for="supportType" class="form-label"
+                      >Type of Support Needed</label
+                    >
+                    <select
+                      class="form-control"
+                      id="supportType"
+                      name="supportType"
+                      required
+                    >
                       <option value="immediate">Immediate Support</option>
                       <option value="scheduled">Scheduled Consultation</option>
                     </select>
@@ -155,12 +170,20 @@
       </div>
     </section>
 
-    <!-- Loading Modal -->
-    <div class="modal" id="loadingModal">
+    <!-- Modals -->
+    <div
+      class="modal"
+      id="loadingModal"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      tabindex="-1"
+    >
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-body text-center p-4">
-            <div class="spinner-border text-primary mb-3"></div>
+            <div class="spinner-border text-primary mb-3" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
             <h5>Processing Your Request...</h5>
             <p class="text-muted mb-0">
               Please wait while we submit your information.
@@ -170,12 +193,19 @@
       </div>
     </div>
 
-    <!-- Success Modal -->
-    <div class="modal" id="successModal">
+    <div
+      class="modal"
+      id="successModal"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      tabindex="-1"
+    >
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-body text-center p-4">
-            <i class="fas fa-check-circle success-icon mb-3"></i>
+            <div class="success-icon mb-3">
+              <i class="fas fa-check-circle"></i>
+            </div>
             <h5>Thank You!</h5>
             <p>Your request has been submitted successfully.</p>
             <p>Your Case ID: <strong id="successCaseId"></strong></p>
@@ -198,24 +228,32 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-      // Wait for DOM to load
       document.addEventListener("DOMContentLoaded", function () {
-        // Get elements
+        // Get all required elements
         const form = document.getElementById("anonymousForm");
-        const loadingModalEl = document.getElementById("loadingModal");
-        const successModalEl = document.getElementById("successModal");
+        const loadingModalElement = document.getElementById("loadingModal");
+        const successModalElement = document.getElementById("successModal");
+        const successCaseIdElement = document.getElementById("successCaseId");
 
-        // Create modal instances
-        let loadingModal, successModal;
-
-        // Initialize modals if they exist
-        if (loadingModalEl && successModalEl) {
-          loadingModal = new bootstrap.Modal(loadingModalEl);
-          successModal = new bootstrap.Modal(successModalEl);
-        } else {
-          console.error("Modal elements not found");
+        // Check if all required elements exist
+        if (
+          !form ||
+          !loadingModalElement ||
+          !successModalElement ||
+          !successCaseIdElement
+        ) {
+          console.error("Required elements not found:", {
+            form: !!form,
+            loadingModal: !!loadingModalElement,
+            successModal: !!successModalElement,
+            successCaseId: !!successCaseIdElement,
+          });
           return;
         }
+
+        // Initialize Bootstrap modals
+        const loadingModal = new bootstrap.Modal(loadingModalElement);
+        const successModal = new bootstrap.Modal(successModalElement);
 
         // Handle form submission
         form.addEventListener("submit", function (e) {
@@ -236,7 +274,7 @@
             date: new Date().toISOString(),
           };
 
-          // Simulate processing
+          // Simulate processing delay
           setTimeout(() => {
             try {
               // Save to localStorage
@@ -251,9 +289,10 @@
               // Hide loading modal
               loadingModal.hide();
 
-              // Update and show success modal
-              document.getElementById("successCaseId").textContent =
-                caseData.caseId;
+              // Update success modal with case ID
+              successCaseIdElement.textContent = caseData.caseId;
+
+              // Show success modal
               successModal.show();
 
               // Reset form
@@ -265,16 +304,15 @@
             }
           }, 2000);
         });
-      });
 
-      function showError(message) {
-        const form = document.getElementById("anonymousForm");
-        const errorDiv = document.createElement("div");
-        errorDiv.className = "alert alert-danger mt-3";
-        errorDiv.textContent = message;
-        form.insertAdjacentElement("beforebegin", errorDiv);
-        setTimeout(() => errorDiv.remove(), 5000);
-      }
+        function showError(message) {
+          const errorDiv = document.createElement("div");
+          errorDiv.className = "alert alert-danger mt-3";
+          errorDiv.textContent = message;
+          form.insertAdjacentElement("beforebegin", errorDiv);
+          setTimeout(() => errorDiv.remove(), 5000);
+        }
+      });
     </script>
   </body>
 </html>
