@@ -121,7 +121,7 @@
                             </tr>
                         </thead>
                         <tbody id="casesTableBody">
-                            <!-- Table content will be dynamically populated -->
+                            <!-- Cases will be dynamically populated -->
                         </tbody>
                     </table>
                 </div>
@@ -136,5 +136,33 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/council-dashboard.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load and display sample cases
+        displayCases(sampleCases);
+    });
+
+    function displayCases(cases) {
+        const tableBody = document.getElementById('casesTableBody');
+        tableBody.innerHTML = cases.map(case => `
+            <tr>
+                <td>${case.caseId}</td>
+                <td>
+                    <span class="badge ${case.supportType === 'immediate' ? 'bg-danger' : 'bg-warning'}">
+                        ${case.supportType === 'immediate' ? 'Urgent' : 'Regular'}
+                    </span>
+                </td>
+                <td>${case.status}</td>
+                <td>${case.email}</td>
+                <td>${case.date}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary" onclick="viewCase('${case.caseId}')">
+                        View Details
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+    </script>
 </body>
 </html> 

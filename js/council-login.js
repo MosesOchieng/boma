@@ -21,42 +21,47 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function handleLogin(event) {
     event.preventDefault();
-    const button = document.getElementById('loginButton');
-    const errorMessage = document.getElementById('errorMessage');
+    
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const button = document.querySelector('button[type="submit"]');
     
     try {
-        button.classList.add('loading');
-        const formData = new FormData(event.target);
-        const data = Object.fromEntries(formData);
-
+        button.disabled = true;
+        button.innerHTML = 'Logging in...';
+        
         const response = await fetch('/api/council/login', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify(data),
-            credentials: 'include'
+            body: JSON.stringify({ email, password })
         });
 
-        if (!response.ok) {
-            throw new Error('Login failed');
-        }
-
-        const result = await response.json();
-        if (result.success) {
+        const data = await response.json();
+        
+        if (response.ok) {
+            localStorage.setItem('councilToken', data.token);
+            localStorage.setItem('councilMember', JSON.stringify(data.councilMember));
             window.location.href = '/council/dashboard';
         } else {
-            throw new Error(result.message || 'Login failed');
+            throw new Error(data.message || 'Login failed');
         }
     } catch (error) {
-        console.error('Login error:', error);
-        errorMessage.textContent = error.message || 'An error occurred. Please try again.';
-        errorMessage.classList.add('show');
+        showError(error.message);
     } finally {
-        button.classList.remove('loading');
+        button.disabled = false;
+        button.innerHTML = 'Sign In';
     }
+}
 
-    return false;
+function showError(message) {
+    const errorDiv = document.getElementById('loginError');
+    errorDiv.textContent = message;
+    errorDiv.style.display = 'block';
+    setTimeout(() => {
+        errorDiv.style.display = 'none';
+    }, 5000);
 }
 
 // Error handling for network issues

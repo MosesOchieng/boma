@@ -71,21 +71,25 @@
          <div class="col-md-5 order-md-last">
           <div class="login-wrap p-4 p-md-5">
               <h3 class="mb-4">Anonymous Mental Health Check</h3>
-              <form id="anonymousForm" class="anonymous-form" id="mental-health-check">
+              <form id="anonymousForm" class="anonymous-form">
                  <div class="form-group">
+                    <label class="label">Email (Optional)</label>
+                    <input type="email" class="form-control" name="email" placeholder="Your email for follow-up">
+                </div>
+                <div class="form-group">
                     <label class="label">How are you feeling today? (1-5)</label>
-                    <input type="range" min="1" max="5" class="form-control">
+                    <input type="range" min="1" max="5" class="form-control" name="feelingScale">
                 </div>
                 <div class="form-group">
                     <label class="label">What's on your mind?</label>
-                    <textarea class="form-control" rows="3"></textarea>
+                    <textarea class="form-control" rows="3" name="concern" required></textarea>
                 </div>
                 <div class="form-group">
                     <label class="label">Would you like to talk to someone?</label>
-                    <select class="form-control">
-                        <option>Yes, immediately</option>
-                        <option>Yes, schedule for later</option>
-                        <option>No, just checking in</option>
+                    <select class="form-control" name="supportType" required>
+                        <option value="immediate">Yes, immediately</option>
+                        <option value="scheduled">Yes, schedule for later</option>
+                        <option value="checkIn">No, just checking in</option>
                     </select>
              </div>
              <div class="form-group d-flex justify-content-end mt-4">
