@@ -147,7 +147,7 @@
     </section>
 
     <!-- Loading Modal -->
-    <div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true">
+    <div class="modal" id="loadingModal" tabindex="-1" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-body text-center p-4">
@@ -155,38 +155,25 @@
               <span class="visually-hidden">Loading...</span>
             </div>
             <h5>Processing Your Request...</h5>
-            <p class="text-muted mb-0">
-              Please wait while we submit your information.
-            </p>
+            <p class="text-muted mb-0">Please wait while we submit your information.</p>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Success Modal -->
-    <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+    <div class="modal" id="successModal" tabindex="-1" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-body text-center p-4">
             <div class="success-icon mb-3">
-              <i
-                class="fas fa-check-circle text-success"
-                style="font-size: 3rem"
-              ></i>
+              <i class="fas fa-check-circle text-success" style="font-size: 3rem;"></i>
             </div>
             <h5>Thank You!</h5>
             <p>Your request has been submitted successfully.</p>
             <p>Your Case ID: <strong id="successCaseId"></strong></p>
-            <p class="text-muted">
-              A council member will reach out to you soon.
-            </p>
-            <button
-              type="button"
-              class="btn btn-primary mt-3"
-              data-bs-dismiss="modal"
-            >
-              Close
-            </button>
+            <p class="text-muted">A council member will reach out to you soon.</p>
+            <button type="button" class="btn btn-primary mt-3" data-bs-dismiss="modal">Close</button>
           </div>
         </div>
       </div>

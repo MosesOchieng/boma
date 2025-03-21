@@ -51,3 +51,14 @@
 .modal.show {
   display: block;
 }
+/* Modal backdrop */
+.modal-backdrop {
+  opacity: 0.5;
+}
+
+/* Ensure modals are visible */
+.modal.show {
+  display: block;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+

@@ -1,24 +1,28 @@
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("anonymousForm");
 
-  // Initialize Bootstrap modals properly
-  const loadingModal = new bootstrap.Modal("#loadingModal", {
-    backdrop: "static",
-    keyboard: false,
-  });
+  if (!form) {
+    console.error("Form not found");
+    return;
+  }
 
-  const successModal = new bootstrap.Modal("#successModal", {
-    backdrop: "static",
-    keyboard: false,
-  });
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
 
-  if (form) {
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
+    // Get the modals
+    const loadingModalElement = document.getElementById("loadingModal");
+    const successModalElement = document.getElementById("successModal");
+    
+    if (!loadingModalElement || !successModalElement) {
+      console.error("Modals not found");
+      return;
+    }
 
-      // Show loading modal
-      loadingModal.show();
+    // Show loading modal
+    const loadingModal = new bootstrap.Modal(loadingModalElement);
+    loadingModal.show();
 
+    try {
       // Create case data
       const caseData = {
         caseId: "BOMA-" + Date.now().toString(36).slice(-6).toUpperCase(),
@@ -31,49 +35,50 @@ document.addEventListener("DOMContentLoaded", function () {
         date: new Date().toISOString(),
       };
 
-      // Simulate processing delay (1.5 seconds)
-      setTimeout(() => {
-        try {
-          // Get existing cases or initialize empty array
-          let cases = [];
-          const existingCases = localStorage.getItem("cases");
+      // Simulate processing delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-          if (existingCases) {
-            cases = JSON.parse(existingCases);
-          }
-
-          // Add new case
-          cases.push(caseData);
-
-          // Save to localStorage
-          localStorage.setItem("cases", JSON.stringify(cases));
-
-          // Hide loading modal
-          loadingModal.hide();
-
-          // Update success modal with case ID and show it
-          const successCaseId = document.getElementById("successCaseId");
-          if (successCaseId) {
-            successCaseId.textContent = caseData.caseId;
-          }
-          successModal.show();
-
-          // Reset form
-          form.reset();
-        } catch (error) {
-          console.error("Submission error:", error);
-          loadingModal.hide();
-          showError("An error occurred during submission. Please try again.");
+      // Save to localStorage
+      let cases = [];
+      try {
+        const existingCases = localStorage.getItem("cases");
+        if (existingCases) {
+          cases = JSON.parse(existingCases);
         }
-      }, 1500);
-    });
-  }
+      } catch (error) {
+        console.error("Error parsing existing cases:", error);
+        cases = [];
+      }
+
+      cases.push(caseData);
+      localStorage.setItem("cases", JSON.stringify(cases));
+
+      // Hide loading modal
+      loadingModal.hide();
+
+      // Show success modal
+      const successModal = new bootstrap.Modal(successModalElement);
+      const successCaseId = document.getElementById("successCaseId");
+      if (successCaseId) {
+        successCaseId.textContent = caseData.caseId;
+      }
+      successModal.show();
+
+      // Reset form
+      form.reset();
+
+    } catch (error) {
+      console.error("Submission error:", error);
+      loadingModal.hide();
+      showError("An error occurred. Please try again.");
+    }
+  });
 
   function showError(message) {
-    const errorAlert = document.createElement("div");
-    errorAlert.className = "alert alert-danger mt-3";
-    errorAlert.textContent = message;
-    form.insertAdjacentElement("beforebegin", errorAlert);
-    setTimeout(() => errorAlert.remove(), 5000);
+    const errorDiv = document.createElement("div");
+    errorDiv.className = "alert alert-danger mt-3";
+    errorDiv.textContent = message;
+    form.insertAdjacentElement("beforebegin", errorDiv);
+    setTimeout(() => errorDiv.remove(), 5000);
   }
 });
