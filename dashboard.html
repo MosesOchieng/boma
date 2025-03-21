@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Council Dashboard - BOMA Students</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Your dashboard content -->
+
+    <script>
+      // Add authentication check
+      document.addEventListener("DOMContentLoaded", function () {
+        const token = localStorage.getItem("councilToken");
+        const memberData = localStorage.getItem("councilMember");
+
+        if (!token || !memberData) {
+          window.location.href = "/council-login.html";
+          return;
+        }
+
+        try {
+          const member = JSON.parse(memberData);
+          document.getElementById("memberName").textContent = member.name;
+        } catch (error) {
+          console.error("Auth error:", error);
+          window.location.href = "/council-login.html";
+        }
+      });
+
+      // Add logout function
+      function logout() {
+        localStorage.removeItem("councilToken");
+        localStorage.removeItem("councilMember");
+        window.location.href = "/council-login.html";
+      }
+    </script>
+  </body>
+</html>

@@ -1,113 +1,130 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Council Login - BOMA Students</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/council-login.css">
-</head>
-<body>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/council-login.css" />
+  </head>
+  <body>
     <div class="login-container">
-        <div class="login-card">
-            <div class="login-header">
-                <img src="/images/council-logo.png" alt="BOMA Council Logo">
-                <h2>Council Member Login</h2>
-            </div>
-            <div class="login-form">
-                <div id="loginError" class="alert alert-danger" style="display: none;"></div>
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <input 
-                            type="email" 
-                            id="email" 
-                            name="email" 
-                            required 
-                            placeholder="Enter your email"
-                            autocomplete="email">
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input 
-                            type="password" 
-                            id="password" 
-                            name="password" 
-                            required 
-                            placeholder="Enter your password">
-                    </div>
-                    <button type="submit" class="login-button">Sign In</button>
-                </form>
-            </div>
+      <div class="login-card">
+        <div class="login-header">
+          <img src="/images/council-logo.png" alt="BOMA Council Logo" />
+          <h2>Council Member Login</h2>
         </div>
+        <div class="login-form">
+          <div
+            id="loginError"
+            class="alert alert-danger"
+            style="display: none"
+          ></div>
+          <form id="loginForm">
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                placeholder="Enter your email"
+                autocomplete="email"
+              />
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                required
+                placeholder="Enter your password"
+              />
+            </div>
+            <button type="submit" class="login-button">Sign In</button>
+          </form>
+        </div>
+      </div>
     </div>
 
     <script>
-    // Define council members data
-    const councilMembers = [
+      // Define council members data
+      const councilMembers = [
         {
-            id: 1,
-            name: "Alex Odhiambo",
-            email: "alex.odhiambo@bihc.com",
-            password: "alex othiambo",
-            role: "Council Member"
+          id: 1,
+          name: "Alex Odhiambo",
+          email: "alex.odhiambo@bihc.com",
+          password: "alex othiambo",
+          role: "Council Member",
         },
         {
-            id: 2,
-            name: "Lynn Ngungi",
-            email: "lynnngungi@gmail.com",
-            password: "lynn ngungi",
-            role: "Council Member"
-        }
-    ];
+          id: 2,
+          name: "Lynn Ngungi",
+          email: "lynnngungi@gmail.com",
+          password: "lynn ngungi",
+          role: "Council Member",
+        },
+      ];
 
-    document.getElementById('loginForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const errorDiv = document.getElementById('loginError');
-        const button = document.querySelector('button[type="submit"]');
-        
-        try {
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+          const errorDiv = document.getElementById("loginError");
+          const button = document.querySelector('button[type="submit"]');
+
+          try {
             button.disabled = true;
-            button.textContent = 'Signing in...';
-            
+            button.textContent = "Signing in...";
+
             // Find matching council member
-            const member = councilMembers.find(m => 
-                m.email.toLowerCase() === email.toLowerCase() && 
-                m.password === password
+            const member = councilMembers.find(
+              (m) =>
+                m.email.toLowerCase() === email.toLowerCase() &&
+                m.password === password,
             );
 
             if (member) {
-                // Create mock token
-                const token = btoa(JSON.stringify({
+              // Store auth data
+              localStorage.setItem(
+                "councilToken",
+                btoa(
+                  JSON.stringify({
                     id: member.id,
                     email: member.email,
-                    role: member.role
-                }));
+                    role: member.role,
+                  }),
+                ),
+              );
+              localStorage.setItem(
+                "councilMember",
+                JSON.stringify({
+                  name: member.name,
+                  email: member.email,
+                  role: member.role,
+                }),
+              );
 
-                // Store auth data
-                localStorage.setItem('councilToken', token);
-                localStorage.setItem('councilMember', JSON.stringify({
-                    name: member.name,
-                    email: member.email,
-                    role: member.role
-                }));
-
-                // Redirect to dashboard
-                window.location.href = '/council/dashboard.html';
+              // Update the redirect path
+              window.location.href = "/dashboard.html";
             } else {
-                throw new Error('Invalid email or password');
+              throw new Error("Invalid email or password");
             }
-        } catch (error) {
+          } catch (error) {
             errorDiv.textContent = error.message;
-            errorDiv.style.display = 'block';
-        } finally {
+            errorDiv.style.display = "block";
+          } finally {
             button.disabled = false;
-            button.textContent = 'Sign In';
-        }
-    });
+            button.textContent = "Sign In";
+          }
+        });
     </script>
-</body>
-</html> 
+  </body>
+</html>

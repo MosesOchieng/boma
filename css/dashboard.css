@@ -1,0 +1,31 @@
+/* Add these styles for the cases table */
+.feeling-scale {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+}
+
+.scale-1 { background-color: #ff6b6b; color: white; }
+.scale-2 { background-color: #ffd93d; color: black; }
+.scale-3 { background-color: #6c757d; color: white; }
+.scale-4 { background-color: #4dabf7; color: white; }
+.scale-5 { background-color: #51cf66; color: white; }
+
+.case-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.concern-text {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 5px;
+}
+
+.case-actions {
+    display: flex;
+    gap: 10px;
+} 
