@@ -19,28 +19,33 @@
     />
   </head>
   <body>
-    <!-- Your dashboard content -->
-
     <script>
-      // Add authentication check
-      document.addEventListener("DOMContentLoaded", function () {
+      // Check authentication before loading dashboard
+      (function checkAuth() {
         const token = localStorage.getItem("councilToken");
         const memberData = localStorage.getItem("councilMember");
 
         if (!token || !memberData) {
-          window.location.href = "/council-login.html";
+          window.location.href = "council-login.html";
           return;
         }
 
         try {
           const member = JSON.parse(memberData);
-          document.getElementById("memberName").textContent = member.name;
+          // If we get here, the auth data is valid
+          console.log("Authenticated as:", member.name);
         } catch (error) {
           console.error("Auth error:", error);
-          window.location.href = "/council-login.html";
+          localStorage.removeItem("councilToken");
+          localStorage.removeItem("councilMember");
+          window.location.href = "council-login.html";
         }
-      });
+      })();
+    </script>
 
+    <!-- Your dashboard content -->
+
+    <script>
       // Add logout function
       function logout() {
         localStorage.removeItem("councilToken");
