@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Get the modals
     const loadingModalElement = document.getElementById("loadingModal");
     const successModalElement = document.getElementById("successModal");
-    
+
     if (!loadingModalElement || !successModalElement) {
       console.error("Modals not found");
       return;
@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
       };
 
       // Simulate processing delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       // Save to localStorage
       let cases = [];
@@ -66,7 +66,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Reset form
       form.reset();
-
     } catch (error) {
       console.error("Submission error:", error);
       loadingModal.hide();
