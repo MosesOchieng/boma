@@ -1,34 +1,34 @@
+import { formConfig } from "./config/form-config.js";
+
 class SupportForm {
   constructor() {
+    this.init();
+  }
+
+  init() {
     this.form = document.getElementById("anonymousForm");
+    if (!this.form) {
+      console.error("Anonymous form not found");
+      return;
+    }
+
     this.loadingModal = new bootstrap.Modal(
       document.getElementById("loadingModal"),
     );
     this.successModal = new bootstrap.Modal(
       document.getElementById("successModal"),
     );
-    this.bindEvents();
+
+    this.form.addEventListener("submit", this.handleSubmit.bind(this));
   }
 
-  bindEvents() {
-    if (this.form) {
-      this.form.addEventListener("submit", (e) => this.handleSubmit(e));
-    }
+  generateCaseId() {
+    return `${formConfig.caseIdPrefix}${Date.now().toString(36).toUpperCase()}`;
   }
 
-  handleSubmit(e) {
-    e.preventDefault();
-
-    // Show loading modal
-    this.loadingModal.show();
-
-    // Generate a case ID
-    const caseId =
-      "BOMA-" + Math.random().toString(36).substr(2, 6).toUpperCase();
-
-    // Get form data
-    const formData = {
-      caseId: caseId,
+  getFormData() {
+    return {
+      caseId: this.generateCaseId(),
       name: this.form.querySelector('input[name="name"]').value,
       email: this.form.querySelector('input[name="email"]').value,
       feelingScale: this.form.querySelector('input[name="feelingScale"]').value,
@@ -37,43 +37,47 @@ class SupportForm {
       status: "pending",
       date: new Date().toISOString(),
     };
+  }
 
-    // Simulate API delay
-    setTimeout(() => {
-      try {
-        // Get existing cases or initialize empty array
-        let cases = [];
-        const existingCases = localStorage.getItem("cases");
+  handleSubmit(e) {
+    e.preventDefault();
 
-        if (existingCases) {
-          try {
-            cases = JSON.parse(existingCases);
-          } catch (e) {
-            cases = [];
-          }
-        }
+    try {
+      this.loadingModal.show();
+      const formData = this.getFormData();
 
-        // Add new case
-        cases.push(formData);
-
-        // Save to localStorage
-        localStorage.setItem("cases", JSON.stringify(cases));
-
-        // Hide loading modal
+      // Simulate API call
+      setTimeout(() => {
+        this.saveCase(formData);
         this.loadingModal.hide();
-
-        // Show success modal
-        document.getElementById("successCaseId").textContent = caseId;
-        this.successModal.show();
-
-        // Reset form
+        this.showSuccess(formData.caseId);
         this.form.reset();
-      } catch (error) {
-        console.error("Error:", error);
-        this.loadingModal.hide();
-        this.showError("An error occurred. Please try again.");
-      }
-    }, 1500);
+      }, formConfig.modalDelay);
+    } catch (error) {
+      console.error("Submission error:", error);
+      this.loadingModal.hide();
+      this.showError("An error occurred. Please try again.");
+    }
+  }
+
+  saveCase(formData) {
+    try {
+      const existingCases = localStorage.getItem(formConfig.storageKey);
+      const cases = existingCases ? JSON.parse(existingCases) : [];
+      cases.push(formData);
+      localStorage.setItem(formConfig.storageKey, JSON.stringify(cases));
+    } catch (error) {
+      console.error("Storage error:", error);
+      throw new Error("Failed to save case");
+    }
+  }
+
+  showSuccess(caseId) {
+    const successCaseId = document.getElementById("successCaseId");
+    if (successCaseId) {
+      successCaseId.textContent = caseId;
+    }
+    this.successModal.show();
   }
 
   showError(message) {
@@ -85,7 +89,5 @@ class SupportForm {
   }
 }
 
-// Initialize when DOM is loaded
-document.addEventListener("DOMContentLoaded", () => {
-  new SupportForm();
-});
+// Initialize form
+const form = new SupportForm();
