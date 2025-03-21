@@ -126,7 +126,12 @@
                   <label for="supportType" class="form-label"
                     >Type of Support Needed</label
                   >
-                  <select class="form-control" id="supportType" name="supportType" required>
+                  <select
+                    class="form-control"
+                    id="supportType"
+                    name="supportType"
+                    required
+                  >
                     <option value="immediate">Immediate Support</option>
                     <option value="scheduled">Scheduled Consultation</option>
                   </select>
@@ -142,22 +147,16 @@
     </section>
 
     <!-- Loading Modal -->
-    <div
-      class="modal fade"
-      id="loadingModal"
-      data-bs-backdrop="static"
-      data-bs-keyboard="false"
-      tabindex="-1"
-    >
+    <div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-body text-center p-4">
             <div class="spinner-border text-primary mb-3" role="status">
               <span class="visually-hidden">Loading...</span>
             </div>
-            <h5>Submitting your request...</h5>
+            <h5>Processing Your Request...</h5>
             <p class="text-muted mb-0">
-              Please wait while we process your information.
+              Please wait while we submit your information.
             </p>
           </div>
         </div>
@@ -165,13 +164,7 @@
     </div>
 
     <!-- Success Modal -->
-    <div
-      class="modal fade"
-      id="successModal"
-      data-bs-backdrop="static"
-      data-bs-keyboard="false"
-      tabindex="-1"
-    >
+    <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-body text-center p-4">
