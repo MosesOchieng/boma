@@ -3,59 +3,54 @@ document.addEventListener('DOMContentLoaded', function() {
     const submissionModal = new bootstrap.Modal(document.getElementById('submissionModal'));
     
     if (form) {
-        form.addEventListener('submit', async function(event) {
-            event.preventDefault();
-            
-            // Show modal with loading state
-            submissionModal.show();
-            document.getElementById('loadingContent').style.display = 'block';
-            document.getElementById('successContent').style.display = 'none';
+        form.addEventListener('submit', handleSubmission);
+    }
 
-            try {
-                const formData = new FormData(form);
-                const data = {
-                    caseId: 'CASE-' + Date.now(),
-                    name: 'Anonymous',
-                    email: formData.get('email') || 'Anonymous',
-                    feelingScale: formData.get('feelingScale'),
-                    concern: formData.get('concern'),
-                    supportType: formData.get('supportType'),
-                    status: formData.get('supportType') === 'immediate' ? 'urgent' : 'active',
-                    date: new Date().toISOString().split('T')[0]
-                };
+    async function handleSubmission(event) {
+        event.preventDefault();
+        
+        // Show modal with loading state
+        submissionModal.show();
+        document.getElementById('loadingContent').style.display = 'block';
+        document.getElementById('successContent').style.display = 'none';
 
-                // Send to server
-                const response = await fetch('/api/submit-anonymous', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                });
+        try {
+            const formData = new FormData(form);
+            const data = {
+                caseId: 'CASE-' + Date.now(),
+                email: formData.get('email') || 'Anonymous',
+                feelingScale: formData.get('feelingScale'),
+                concern: formData.get('concern'),
+                supportType: formData.get('supportType'),
+                date: new Date().toISOString(),
+                status: formData.get('supportType') === 'immediate' ? 'urgent' : 'active'
+            };
 
-                if (!response.ok) {
-                    throw new Error('Submission failed');
-                }
+            // Store in localStorage (temporary solution)
+            let cases = JSON.parse(localStorage.getItem('cases') || '[]');
+            cases.push(data);
+            localStorage.setItem('cases', JSON.stringify(cases));
 
-                // Show success message after 1.5 seconds
-                setTimeout(() => {
-                    document.getElementById('loadingContent').style.display = 'none';
-                    document.getElementById('successContent').style.display = 'block';
-                }, 1500);
+            // Simulate server delay
+            await new Promise(resolve => setTimeout(resolve, 1500));
 
-                // Reset form
-                form.reset();
+            // Show success message
+            document.getElementById('loadingContent').style.display = 'none';
+            document.getElementById('successContent').style.display = 'block';
 
-            } catch (error) {
-                console.error('Submission error:', error);
-                // Handle error state
-                document.getElementById('loadingContent').innerHTML = `
-                    <i class="fas fa-exclamation-circle text-danger" style="font-size: 3rem;"></i>
-                    <h5 class="mt-3">Submission Failed</h5>
+            // Reset form
+            form.reset();
+
+        } catch (error) {
+            console.error('Submission error:', error);
+            document.getElementById('loadingContent').innerHTML = `
+                <div class="error-state">
+                    <i class="fas fa-exclamation-circle text-danger"></i>
+                    <h5>Submission Failed</h5>
                     <p>Please try again later.</p>
-                    <button type="button" class="btn btn-primary mt-3" data-bs-dismiss="modal">Close</button>
-                `;
-            }
-        });
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                </div>
+            `;
+        }
     }
 }); 

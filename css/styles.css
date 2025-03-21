@@ -2,6 +2,7 @@
     background: #fff;
     border-radius: 15px;
     padding: 20px;
+    border: none;
 }
 
 .modal-body {
@@ -43,6 +44,16 @@
     font-size: 48px;
     color: #2ecc71;
     margin: 20px 0;
+}
+
+.error-state {
+    padding: 20px;
+}
+
+.error-state i {
+    font-size: 48px;
+    color: #e74c3c;
+    margin-bottom: 15px;
 }
 
 @keyframes spin {
