@@ -18,10 +18,10 @@ document.addEventListener("DOMContentLoaded", function () {
     // Show loading modal
     loadingModal.show();
 
-    // Create case data
-    const caseData = {
-      caseId: "BOMA-" + Date.now().toString().slice(-6),
-      name: form.querySelector('[name="name"]').value,
+    // Get form data
+    const formData = {
+      caseId: generateCaseId(),
+      name: form.querySelector('[name="name"]').value || "Anonymous",
       email: form.querySelector('[name="email"]').value,
       feelingScale: form.querySelector('[name="feelingScale"]').value,
       concern: form.querySelector('[name="concern"]').value,
@@ -30,46 +30,59 @@ document.addEventListener("DOMContentLoaded", function () {
       date: new Date().toISOString(),
     };
 
-    // Simulate server delay
+    // Process submission after delay
     setTimeout(() => {
-      try {
-        // Get existing cases
-        let cases = [];
-        const existingCases = localStorage.getItem("cases");
+      saveCase(formData);
+    }, 1500);
+  }
 
+  function generateCaseId() {
+    return "BOMA-" + Math.random().toString(36).substr(2, 6).toUpperCase();
+  }
+
+  function saveCase(caseData) {
+    try {
+      // Initialize or get existing cases array
+      let cases = [];
+      try {
+        const existingCases = localStorage.getItem("cases");
         if (existingCases) {
           cases = JSON.parse(existingCases);
         }
-
-        // Ensure cases is an array
-        if (!Array.isArray(cases)) {
-          cases = [];
-        }
-
-        // Add new case
-        cases.push(caseData);
-
-        // Save to localStorage
-        localStorage.setItem("cases", JSON.stringify(cases));
-
-        // Hide loading modal
-        loadingModal.hide();
-
-        // Show success message
-        const successCaseId = document.getElementById("successCaseId");
-        if (successCaseId) {
-          successCaseId.textContent = caseData.caseId;
-        }
-        successModal.show();
-
-        // Reset form
-        form.reset();
-      } catch (error) {
-        console.error("Error:", error);
-        loadingModal.hide();
-        showError("An error occurred. Please try again.");
+      } catch (e) {
+        cases = [];
       }
-    }, 1500);
+
+      // Ensure cases is an array
+      if (!Array.isArray(cases)) {
+        cases = [];
+      }
+
+      // Add new case
+      cases.push(caseData);
+
+      // Save to localStorage
+      localStorage.setItem("cases", JSON.stringify(cases));
+
+      // Hide loading modal
+      loadingModal.hide();
+
+      // Update success modal with case ID
+      const successCaseIdElement = document.getElementById("successCaseId");
+      if (successCaseIdElement) {
+        successCaseIdElement.textContent = caseData.caseId;
+      }
+
+      // Show success modal
+      successModal.show();
+
+      // Reset form
+      form.reset();
+    } catch (error) {
+      console.error("Save error:", error);
+      loadingModal.hide();
+      showError("Submission failed. Please try again.");
+    }
   }
 
   function showError(message) {
