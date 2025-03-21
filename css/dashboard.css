@@ -3,6 +3,8 @@
   padding: 4px 8px;
   border-radius: 12px;
   font-size: 0.85rem;
+  display: inline-flex;
+  gap: 2px;
 }
 
 .scale-1 {
@@ -24,6 +26,10 @@
 .scale-5 {
   background-color: #51cf66;
   color: white;
+}
+
+.feeling-scale i {
+  color: #ffc107;
 }
 
 .case-header {
@@ -253,4 +259,78 @@ body {
   .header-search {
     width: 200px;
   }
+}
+
+.toast-container {
+  z-index: 1050;
+}
+
+.toast {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.toast-header {
+  border-radius: 8px 8px 0 0;
+}
+
+.case-detail {
+  padding: 15px;
+}
+
+.detail-header {
+  display: flex;
+  gap: 10px;
+}
+
+.detail-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.note-item {
+  border-left: 3px solid var(--primary-color);
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.timeline-item {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 15px;
+}
+
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 2px;
+  background: var(--primary-color);
+}
+
+.timeline-date {
+  font-size: 0.8em;
+  color: #666;
+}
+
+.notification-item {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.notification-item.read {
+  background: #f8f9fa;
+}
+
+.notification-title {
+  font-weight: 600;
+}
+
+.notification-message {
+  font-size: 0.9em;
+  color: #666;
 }
