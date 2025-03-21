@@ -1,73 +1,91 @@
 class SupportForm {
-    constructor() {
-        this.form = document.getElementById('anonymousForm');
-        this.loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
-        this.successModal = new bootstrap.Modal(document.getElementById('successModal'));
-        this.init();
+  constructor() {
+    this.form = document.getElementById("anonymousForm");
+    this.loadingModal = new bootstrap.Modal(
+      document.getElementById("loadingModal"),
+    );
+    this.successModal = new bootstrap.Modal(
+      document.getElementById("successModal"),
+    );
+    this.bindEvents();
+  }
+
+  bindEvents() {
+    if (this.form) {
+      this.form.addEventListener("submit", (e) => this.handleSubmit(e));
     }
+  }
 
-    init() {
-        this.form.addEventListener('submit', (e) => this.handleSubmit(e));
-    }
+  handleSubmit(e) {
+    e.preventDefault();
 
-    async handleSubmit(e) {
-        e.preventDefault();
-        
-        try {
-            // Show loading modal
-            this.loadingModal.show();
+    // Show loading modal
+    this.loadingModal.show();
 
-            // Get form data
-            const formData = {
-                name: this.form.querySelector('[name="name"]').value,
-                email: this.form.querySelector('[name="email"]').value,
-                feelingScale: this.form.querySelector('[name="feelingScale"]').value,
-                concern: this.form.querySelector('[name="concern"]').value,
-                supportType: this.form.querySelector('[name="supportType"]').value,
-                details: this.form.querySelector('[name="details"]').value,
-                caseId: 'BOMA-' + Date.now().toString().slice(-6)
-            };
+    // Generate a case ID
+    const caseId =
+      "BOMA-" + Math.random().toString(36).substr(2, 6).toUpperCase();
 
-            // Simulate API call (replace with actual API call in production)
-            await new Promise(resolve => setTimeout(resolve, 1500));
+    // Get form data
+    const formData = {
+      caseId: caseId,
+      name: this.form.querySelector('input[name="name"]').value,
+      email: this.form.querySelector('input[name="email"]').value,
+      feelingScale: this.form.querySelector('input[name="feelingScale"]').value,
+      concern: this.form.querySelector('textarea[name="concern"]').value,
+      supportType: this.form.querySelector('select[name="supportType"]').value,
+      status: "pending",
+      date: new Date().toISOString(),
+    };
 
-            // Store in local storage for demo purposes
-            const cases = JSON.parse(localStorage.getItem('cases') || '[]');
-            cases.push({
-                ...formData,
-                status: 'pending',
-                date: new Date().toISOString(),
-                id: Date.now()
-            });
-            localStorage.setItem('cases', JSON.stringify(cases));
+    // Simulate API delay
+    setTimeout(() => {
+      try {
+        // Get existing cases or initialize empty array
+        let cases = [];
+        const existingCases = localStorage.getItem("cases");
 
-            // Hide loading modal
-            this.loadingModal.hide();
-
-            // Show success modal
-            document.getElementById('successCaseId').textContent = formData.caseId;
-            this.successModal.show();
-
-            // Reset form
-            this.form.reset();
-
-        } catch (error) {
-            console.error('Submission error:', error);
-            this.loadingModal.hide();
-            this.showError('An error occurred during submission. Please try again.');
+        if (existingCases) {
+          try {
+            cases = JSON.parse(existingCases);
+          } catch (e) {
+            cases = [];
+          }
         }
-    }
 
-    showError(message) {
-        const errorAlert = document.createElement('div');
-        errorAlert.className = 'alert alert-danger mt-3';
-        errorAlert.textContent = message;
-        this.form.insertAdjacentElement('beforebegin', errorAlert);
-        setTimeout(() => errorAlert.remove(), 5000);
-    }
+        // Add new case
+        cases.push(formData);
+
+        // Save to localStorage
+        localStorage.setItem("cases", JSON.stringify(cases));
+
+        // Hide loading modal
+        this.loadingModal.hide();
+
+        // Show success modal
+        document.getElementById("successCaseId").textContent = caseId;
+        this.successModal.show();
+
+        // Reset form
+        this.form.reset();
+      } catch (error) {
+        console.error("Error:", error);
+        this.loadingModal.hide();
+        this.showError("An error occurred. Please try again.");
+      }
+    }, 1500);
+  }
+
+  showError(message) {
+    const errorDiv = document.createElement("div");
+    errorDiv.className = "alert alert-danger mt-3";
+    errorDiv.textContent = message;
+    this.form.insertAdjacentElement("beforebegin", errorDiv);
+    setTimeout(() => errorDiv.remove(), 5000);
+  }
 }
 
-// Initialize form
-document.addEventListener('DOMContentLoaded', () => {
-    new SupportForm();
-}); 
+// Initialize when DOM is loaded
+document.addEventListener("DOMContentLoaded", () => {
+  new SupportForm();
+});

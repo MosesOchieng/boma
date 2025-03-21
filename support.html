@@ -73,42 +73,60 @@
           <div class="col-md-8 mx-auto">
             <div class="support-form-wrap p-5 bg-light">
               <h3>Request Anonymous Support</h3>
-              <form id="anonymousSupport" class="anonymous-form">
-                <div class="form-group">
-                  <label>What type of support do you need?</label>
-                  <select class="form-control">
-                    <option>One-on-one Counseling</option>
-                    <option>Group Support</option>
-                    <option>Academic Stress Support</option>
-                    <option>Personal Issues</option>
+              <form id="anonymousForm">
+                <div class="mb-3">
+                  <label for="name" class="form-label">Name</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="name"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="email" class="form-label">Email</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    name="email"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="feelingScale" class="form-label"
+                    >How are you feeling? (1-5)</label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    name="feelingScale"
+                    min="1"
+                    max="5"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="concern" class="form-label"
+                    >What's troubling you?</label
+                  >
+                  <textarea
+                    class="form-control"
+                    name="concern"
+                    rows="4"
+                    required
+                  ></textarea>
+                </div>
+                <div class="mb-3">
+                  <label for="supportType" class="form-label"
+                    >Type of Support Needed</label
+                  >
+                  <select class="form-control" name="supportType" required>
+                    <option value="immediate">Immediate Support</option>
+                    <option value="scheduled">Scheduled Consultation</option>
                   </select>
                 </div>
-
-                <div class="form-group">
-                  <label>Briefly describe what's troubling you</label>
-                  <textarea class="form-control" rows="5"></textarea>
-                </div>
-
-                <div class="form-group">
-                  <label>Preferred contact method</label>
-                  <select class="form-control">
-                    <option>Anonymous Chat</option>
-                    <option>Anonymous Email</option>
-                    <option>Phone Call</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label>Best time to reach you</label>
-                  <select class="form-control">
-                    <option>Morning (9AM - 12PM)</option>
-                    <option>Afternoon (12PM - 5PM)</option>
-                    <option>Evening (5PM - 8PM)</option>
-                  </select>
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-lg btn-block">
-                  Submit Request
+                <button type="submit" class="btn btn-primary">
+                  Submit Anonymously
                 </button>
               </form>
             </div>
