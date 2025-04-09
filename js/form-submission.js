@@ -2,9 +2,10 @@ document.addEventListener("DOMContentLoaded", function () {
   // First, verify all elements exist
   const elements = {
     form: document.getElementById("anonymousForm"),
-    loadingModal: document.getElementById("loadingModal"),
-    successModal: document.getElementById("successModal"),
-    successCaseId: document.getElementById("successCaseId"),
+    submissionModal: document.getElementById("submissionModal"),
+    loadingContent: document.getElementById("loadingContent"),
+    successContent: document.getElementById("successContent"),
+    caseIdElement: document.querySelector(".case-id"),
   };
 
   // Check if any element is missing
@@ -15,21 +16,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Initialize Bootstrap modals
-  const loadingModal = new bootstrap.Modal(elements.loadingModal);
-  const successModal = new bootstrap.Modal(elements.successModal);
+  // Initialize Bootstrap modal
+  const submissionModal = new bootstrap.Modal(elements.submissionModal);
 
   // Handle form submission
   elements.form.addEventListener("submit", function (e) {
     e.preventDefault();
 
-    // Show loading modal
-    loadingModal.show();
+    // Show loading state
+    elements.loadingContent.style.display = "block";
+    elements.successContent.style.display = "none";
+    submissionModal.show();
 
     // Create case data
     const caseData = {
       caseId: "BOMA-" + Date.now().toString(36).slice(-6).toUpperCase(),
-      name: elements.form.querySelector('[name="name"]').value,
       email: elements.form.querySelector('[name="email"]').value,
       feelingScale: elements.form.querySelector('[name="feelingScale"]').value,
       concern: elements.form.querySelector('[name="concern"]').value,
@@ -44,18 +45,16 @@ document.addEventListener("DOMContentLoaded", function () {
         // Save to localStorage
         saveCase(caseData);
 
-        // Hide loading modal
-        loadingModal.hide();
-
-        // Show success message
-        elements.successCaseId.textContent = caseData.caseId;
-        successModal.show();
+        // Show success state
+        elements.loadingContent.style.display = "none";
+        elements.successContent.style.display = "block";
+        elements.caseIdElement.textContent = caseData.caseId;
 
         // Reset form
         elements.form.reset();
       } catch (error) {
         console.error("Error:", error);
-        loadingModal.hide();
+        submissionModal.hide();
         showError("An error occurred. Please try again.");
       }
     }, 2000);
@@ -74,4 +73,10 @@ document.addEventListener("DOMContentLoaded", function () {
     elements.form.insertAdjacentElement("beforebegin", errorDiv);
     setTimeout(() => errorDiv.remove(), 5000);
   }
+
+  // Reset modal state when it's hidden
+  elements.submissionModal.addEventListener("hidden.bs.modal", function () {
+    elements.loadingContent.style.display = "block";
+    elements.successContent.style.display = "none";
+  });
 });
